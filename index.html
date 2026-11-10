@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tip Calculator</title>
+<style>
+  body { font-family: system-ui, -apple-system, sans-serif; background: #f4f6fb; margin: 0; padding: 40px 16px; color: #1a2540; }
+  .card { max-width: 420px; margin: 0 auto; background: #fff; border-radius: 16px; padding: 28px; box-shadow: 0 8px 30px rgba(0,0,0,.08); }
+  h1 { margin: 0 0 4px; font-size: 26px; }
+  p { color: #5a6b8c; margin: 0 0 20px; }
+  label { display: block; font-weight: 600; margin: 16px 0 6px; }
+  input[type=number] { width: 100%; box-sizing: border-box; padding: 12px; font-size: 18px; border: 1px solid #cbd5e1; border-radius: 10px; }
+  input[type=range] { width: 100%; }
+  .row { display: flex; justify-content: space-between; padding: 10px 0; border-top: 1px solid #eef2f7; }
+  .total { font-size: 22px; font-weight: 700; }
+  .error { color: #c0392b; font-size: 14px; min-height: 20px; }
+  button { width: 100%; margin-top: 12px; padding: 12px; font-size: 16px; border: 0; border-radius: 10px; background: #2563eb; color: #fff; cursor: pointer; }
+</style>
+</head>
+<body>
+<main class="card">
+  <h1>Tip Calculator</h1>
+  <p>Enter the bill amount and tip percentage to see the tip and total.</p>
+  <label for="bill">Bill amount ($)</label>
+  <input id="bill" type="number" min="0" step="0.01" value="100" placeholder="0.00">
+  <label for="tipPercent">Tip percentage: <span id="tipPercentLabel">15</span>%</label>
+  <input id="tipPercent" type="range" min="0" max="50" step="1" value="15">
+  <input id="tipPercentNumber" type="number" min="0" max="100" step="1" value="15" aria-label="Tip percentage number">
+  <p class="error" id="error"></p>
+  <div class="row"><span>Tip amount</span><strong id="tipAmount">$15.00</strong></div>
+  <div class="row total"><span>Total price</span><span id="total">$115.00</span></div>
+  <button id="reset" type="button">Reset</button>
+</main>
+<script>
+  const bill = document.getElementById('bill');
+  const tipPercent = document.getElementById('tipPercent');
+  const tipPercentNumber = document.getElementById('tipPercentNumber');
+  const tipPercentLabel = document.getElementById('tipPercentLabel');
+  const tipAmount = document.getElementById('tipAmount');
+  const total = document.getElementById('total');
+  const error = document.getElementById('error');
+  function money(n) { return '$' + n.toFixed(2); }
+  function calculate() {
+    const billValue = parseFloat(bill.value);
+    const percent = parseFloat(tipPercent.value);
+    if (isNaN(billValue) || billValue < 0) { error.textContent = 'Please enter a bill amount of 0 or more.'; tipAmount.textContent = '$0.00'; total.textContent = '$0.00'; return; }
+    if (isNaN(percent) || percent < 0) { error.textContent = 'Please enter a tip percentage of 0 or more.'; return; }
+    error.textContent = '';
+    const tip = billValue * percent / 100;
+    tipAmount.textContent = money(tip);
+    total.textContent = money(billValue + tip);
+    tipPercentLabel.textContent = percent;
+  }
+  bill.addEventListener('input', calculate);
+  tipPercent.addEventListener('input', () => { tipPercentNumber.value = tipPercent.value; calculate(); });
+  tipPercentNumber.addEventListener('input', () => { tipPercent.value = tipPercentNumber.value; calculate(); });
+  document.getElementById('reset').addEventListener('click', () => { bill.value = '100'; tipPercent.value = '15'; tipPercentNumber.value = '15'; calculate(); });
+  calculate();
+</script>
+</body>
+</html>
